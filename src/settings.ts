@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import {authRoute} from "./routes/auth-route";
 import {usersRouter} from "./routes/users-route";
 import {commentsRoute} from "./routes/comments-route";
+import {emailRoute} from "./routes/emailRoute";
 
 export const app: Express = express();
 morganBody(app);
@@ -29,3 +30,5 @@ app.use('/testing', testingRoute)
 app.use('/auth', authRoute)
 app.use('/users', usersRouter)
 app.use('/comments', commentsRoute)
+
+app.use('/email', emailRoute)
