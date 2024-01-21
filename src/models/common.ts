@@ -13,7 +13,7 @@ export const AvailableResolutions = [
 export enum StatusCode {
     OK_200 = 200,
     CREATED_201 = 201,
-    NoContent_204 = 204,
+    NO_CONTENT_204 = 204,
     BAD_REQUEST_400 = 400,
     NOT_AUTHORIZED_401 = 401,
     Forbidden_403 = 403,

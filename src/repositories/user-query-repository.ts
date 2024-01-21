@@ -1,5 +1,5 @@
 import {usersCollection} from "../db/db";
-import {UserDbModel, userMapper, UserOutputModel} from "../models/users/users-models"
+import {UserDbModel, userMapper, UserViewModel} from "../models/users/users-models"
 import {ObjectId, WithId} from "mongodb";
 
 
@@ -47,7 +47,7 @@ export class UsersQueryRepository  {
         }
     }
 
-    static async findCurrentUser(userId: string): Promise<UserOutputModel | null> {
+    static async findCurrentUser(userId: string): Promise<UserViewModel | null> {
         if (!ObjectId.isValid(userId)) return null
         const currentUser: WithId<UserDbModel> | null = await usersCollection.findOne({_id: new ObjectId(userId)})
         return currentUser ? userMapper(currentUser) : null

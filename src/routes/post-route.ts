@@ -77,7 +77,7 @@ postRoute.put('/:postId',
             return
         }
         await PostsService.updatePost(postId, req.body)
-        res.status(StatusCode.NoContent_204).send('No content')
+        res.status(StatusCode.NO_CONTENT_204).send('No content')
     })
 
 //+
@@ -85,7 +85,7 @@ postRoute.delete('/:postId',
     authMiddleware,
     async (req: Request, res: Response) => {
         const isDeleted = await PostsService.deletePost(req.params.postId)
-        isDeleted ? res.sendStatus(StatusCode.NoContent_204) : res.sendStatus(StatusCode.NOT_FOUND_404)
+        isDeleted ? res.sendStatus(StatusCode.NO_CONTENT_204) : res.sendStatus(StatusCode.NOT_FOUND_404)
     })
 
 

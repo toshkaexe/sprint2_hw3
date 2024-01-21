@@ -36,6 +36,6 @@ usersRouter.delete('/:id',
     authMiddleware,
     async (req: Request, res: Response) => {
         const isDeleted = await UsersService.deleteUser(req.params.id)
-        isDeleted ? res.sendStatus(StatusCode.NoContent_204) :
+        isDeleted ? res.sendStatus(StatusCode.NO_CONTENT_204) :
             res.sendStatus(StatusCode.NOT_FOUND_404)
     })

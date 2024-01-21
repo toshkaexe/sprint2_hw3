@@ -10,7 +10,7 @@ testingRoute.delete('/all-data', async (req: Request, res: Response) => {
     await usersCollection.deleteMany({});
     await commentsCollection.deleteMany({})
     //await database.dropDatabase();
-    res.sendStatus(StatusCode.NoContent_204);
+    res.sendStatus(StatusCode.NO_CONTENT_204);
 
 
 });

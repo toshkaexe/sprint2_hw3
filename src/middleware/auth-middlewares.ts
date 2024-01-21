@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import {ObjectId} from "mongodb";
 import {UsersService} from "../domain/users-service";
 import {jwtService} from "../domain/jwt-service";
-import {UserOutputModel} from "../models/users/users-models";
+import {UserViewModel} from "../models/users/users-models";
 
 //import {jwtService} from "../application/jwt-service";
 
@@ -54,7 +54,7 @@ export const bearerAuth = async (req: Request,
     if (!userId) return  res.sendStatus(StatusCode.NOT_AUTHORIZED_401)
     if(!ObjectId.isValid(userId)) return res.sendStatus(StatusCode.NOT_FOUND_404)
 
-    const user: UserOutputModel | null = await UsersService.findUserById(userId)
+    const user: UserViewModel | null = await UsersService.findUserById(userId)
     if (user) {
         req.user = user
         return next()

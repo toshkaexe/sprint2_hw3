@@ -9,20 +9,40 @@ import {inputValidation} from "../validators/input-validation";
 import {validateAuthorization} from "../validators/auth-validation";
 import {bearerAuth} from "../middleware/auth-middlewares";
 import {UsersQueryRepository} from "../repositories/user-query-repository";
+import {authRegistrationValidation} from "../middleware/user-already-exist";
+import {authService} from "../domain/auth-service";
 
 
 export const authRoute = Router({})
 
+authRoute.post('/registration',
+    authRegistrationValidation(),
+    async (req: Request, res: Response): Promise<void> => {
+        const user = await authService.createUserAccount(req.body)
+        if (!user) {
+            res.sendStatus(StatusCode.BAD_REQUEST_400)
+            return
+        }
+        res.sendStatus(StatusCode.NO_CONTENT_204)
+        return
+    }
+)
+
+authRoute.post('/registration-email-resending',
+    async (req: Request, res: Response) => {
+        const user = await authService.resendCode(req.body.email)
+        if (!user) return res.sendStatus(StatusCode.BAD_REQUEST_400)
+        res.sendStatus(StatusCode.NO_CONTENT_204)
+        return
+    }
+)
 
 
 authRoute.post('/login',
     validateAuthorization(),
     inputValidation,
-
-    async (req: Request, res: Response): Promise<void>  => {
-    console.log(req.body)
-        const user: WithId<UserDbModel> | null  = await UsersService.checkCredentials(req.body)
-        console.log(user)
+    async (req: Request, res: Response): Promise<void> => {
+        const user = await authService.checkCredentials(req.body)
         if (user) {
             const token = await jwtService.createJWT(user)
             res.status(StatusCode.OK_200).send({accessToken: token})
@@ -33,7 +53,7 @@ authRoute.post('/login',
     }
 )
 
-authRoute.get('/me' ,
+authRoute.get('/me',
     bearerAuth,
     async (req: Request, res: Response) => {
         const userId = req.user!.id

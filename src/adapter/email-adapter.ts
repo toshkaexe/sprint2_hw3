@@ -7,7 +7,7 @@ export const emailAdapter = {
         let transporter = nodemailer.createTransport({
             service: 'Mail.ru',
             auth: {
-                user: "antonanton2025@internet.ru",
+                user: process.env.EMAIL,
                 pass: process.env.EMAIL_PWS
             }
         });
@@ -22,7 +22,6 @@ export const emailAdapter = {
 
         console.log(info);
         return info;
-        //     return;
     }
 
 }

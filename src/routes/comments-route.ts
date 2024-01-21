@@ -21,7 +21,7 @@ commentsRoute.put('/:commentId',
 
         if (isUpdated === false) return res.sendStatus(StatusCode.Forbidden_403);
         if ( !isUpdated) return res.sendStatus(StatusCode.NOT_FOUND_404)
-        return res.sendStatus(StatusCode.NoContent_204);
+        return res.sendStatus(StatusCode.NO_CONTENT_204);
 
     })
 
@@ -35,7 +35,7 @@ commentsRoute.delete('/:commentId',
 
         if (isDeleted === false) return res.sendStatus(StatusCode.Forbidden_403);
         if ( !isDeleted) return res.sendStatus(StatusCode.NOT_FOUND_404)
-        return res.sendStatus(StatusCode.NoContent_204);
+        return res.sendStatus(StatusCode.NO_CONTENT_204);
 
 
     }

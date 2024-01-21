@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
 import {ObjectId, WithId} from "mongodb";
-import {CreateUserInputModel, UserDbModel, userMapper, UserOutputModel} from "../models/users/users-models";
+import {CreateUserInputModel, UserDbModel, userMapper, UserViewModel} from "../models/users/users-models";
 import {UsersRepository} from "../repositories/users-repositiory";
 import {LoginInputModel} from "../models/auth/login-model";
+import {add} from "date-fns/add";
+import {v4 as uuidv4} from "uuid"
 
 
 export class UsersService {
@@ -13,15 +15,27 @@ export class UsersService {
         return userMapper(user)
 
     }
-
-    static async createUser(body: CreateUserInputModel): Promise<UserOutputModel> {
+   static async createUser(body: CreateUserInputModel): Promise<UserViewModel> {
         const passwordHash = await bcrypt.hash(body.password, 10)
         const newUser: UserDbModel = {
-            login: body.login,
-            email: body.email,
-            password: passwordHash,
-            createdAt: new Date().toISOString(),
-        }
+            _id: new ObjectId(),
+            accountData: {
+                "userName": body.login,
+                "email": body.email,
+                "passwordHash": passwordHash,
+                "createdAt": new Date().toISOString(),
+            },
+            emailConfirmation: {
+                confirmationCode: uuidv4(),
+                expirationDate: add(new Date(), {
+                    hours: 1,
+                    minutes: 3
+                }),
+                isConfirmed: false
+            }
+
+        };
+
         return UsersRepository.createUser(newUser)
     }
 
@@ -29,13 +43,4 @@ export class UsersService {
         return UsersRepository.deleteUser(id)
     }
 
-    static async checkCredentials(body: LoginInputModel) {
-        const user: WithId<UserDbModel> | null = await UsersRepository.findByLoginOrEmail(body.loginOrEmail)
-        if (!user) return null
-        const compare = await bcrypt.compare(body.password, user.password)
-        if (compare) {
-            return user
-        }
-        return null
-    }
 }
