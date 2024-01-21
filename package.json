@@ -22,7 +22,8 @@
     "morgan-body": "^2.6.9",
     "nodemailer": "^6.9.8",
     "supertest": "^6.3.3",
-    "ts-jest": "^29.1.1"
+    "ts-jest": "^29.1.1",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
