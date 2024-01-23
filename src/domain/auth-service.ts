@@ -9,6 +9,8 @@ import {add} from 'date-fns/add'
 import {CreateUserInputModel} from "../models/users/users-models";
 export const authService = {
 
+
+
     async resendCode(email: string) {
         const user = await UsersRepository.findByLoginOrEmail(email)
         if (!user) return null
@@ -71,12 +73,13 @@ export const authService = {
         <h1>Thanks for your registration</h1>
         <p>
             To finish registration, please follow the link below:
-            <a href='https://somesite.com/confirm-email?code=${passwordHash}'>
+            <a href='https://somesite.com/confirm-email?code=${user.emailConfirmation.confirmationCode}'>
+            
                 complete registration
             </a>
         </p>
         <p>Код поддверждения для тестов</p>
-        <p>${passwordHash}</p>
+        <p>'${user.emailConfirmation.confirmationCode}'</p>
     `
         }
         const createResult= await UsersRepository.createUser(user)
@@ -93,8 +96,10 @@ export const authService = {
 
     async checkCredentials(body: LoginInputModel) {
         const user = await UsersRepository.findByLoginOrEmail(body.loginOrEmail)
+        console.log("uuu")
+        console.log(user)
         if (!user) return null
-        if (!user.emailConfirmation.isConfirmed) return null
+       // if (!user.emailConfirmation.isConfirmed) return null
         const compare = await bcrypt.compare(body.password, user.accountData.passwordHash)
         if (compare) {
             return user
@@ -112,4 +117,5 @@ export const authService = {
         let result = await UsersRepository.updateConfirmation(user._id.toString())
         return result
     },
+
 }

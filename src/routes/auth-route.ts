@@ -9,14 +9,18 @@ import {inputValidation} from "../validators/input-validation";
 import {validateAuthorization} from "../validators/auth-validation";
 import {bearerAuth} from "../middleware/auth-middlewares";
 import {UsersQueryRepository} from "../repositories/user-query-repository";
-import {authRegistrationValidation} from "../middleware/user-already-exist";
+import {
+    authConfirmationValidation,
+    authRegistraionResendingEmail,
+    registrationValidation
+} from "../middleware/user-already-exist";
 import {authService} from "../domain/auth-service";
 
 
 export const authRoute = Router({})
 
 authRoute.post('/registration',
-    authRegistrationValidation(),
+    registrationValidation(),
     async (req: Request, res: Response): Promise<void> => {
         const user = await authService.createUserAccount(req.body)
         if (!user) {
@@ -29,9 +33,28 @@ authRoute.post('/registration',
 )
 
 authRoute.post('/registration-email-resending',
+    authRegistraionResendingEmail(),
     async (req: Request, res: Response) => {
         const user = await authService.resendCode(req.body.email)
-        if (!user) return res.sendStatus(StatusCode.BAD_REQUEST_400)
+        if (!user) {
+            res.sendStatus(StatusCode.BAD_REQUEST_400);
+            return
+        }
+        res.sendStatus(StatusCode.NO_CONTENT_204)
+        return
+    }
+)
+
+authRoute.post('/registration-confirmation',
+    authConfirmationValidation(),
+
+    async (req: Request, res: Response): Promise<void> => {
+        const code = req.body.code;
+        const corfirmResult = await authService.confirmEmail(code);
+        if (!corfirmResult) {
+            res.sendStatus(StatusCode.BAD_REQUEST_400)
+            return
+        }
         res.sendStatus(StatusCode.NO_CONTENT_204)
         return
     }
@@ -43,6 +66,8 @@ authRoute.post('/login',
     inputValidation,
     async (req: Request, res: Response): Promise<void> => {
         const user = await authService.checkCredentials(req.body)
+        console.log("3333333333333333333")
+        console.log(user)
         if (user) {
             const token = await jwtService.createJWT(user)
             res.status(StatusCode.OK_200).send({accessToken: token})

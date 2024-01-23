@@ -18,9 +18,10 @@ export class UsersRepository {
         const user = await usersCollection.findOne(
             {
                 $or: [
-                    {email: loginOrEmail},
-                    {login: loginOrEmail}]
+                    {'accountData.email': loginOrEmail},
+                    {'accountData.userName': loginOrEmail}]
             })
+
         return user
     }
 
@@ -34,6 +35,13 @@ export class UsersRepository {
         return usersCollection.deleteMany({})
     }
 
+    static async confirmUser(id: string){
+        if(!ObjectId.isValid(id)) return false
+        const result = await usersCollection.updateOne({_id: new ObjectId(id)},
+            {$set: {'emailConfirmation.isConfirmed': true}})
+        return result.matchedCount === 1
+
+    }
 
 
    static async updateConfirmation(id: string) {

@@ -38,9 +38,53 @@ export const passwordValidation = body('password')
     .trim()
     .isLength({min: 6, max:20})
     .withMessage('incorrect password');
-export const authRegistrationValidation = () => [uniqueEmailValidator,
+export const registrationValidation = () => [
+    uniqueEmailValidator,
     uniqueLoginValidator,
     loginValidation,
     emailValidation,
     passwordValidation,
     inputValidation];
+
+
+export const confirmationCodeValidation
+    = body('code')
+    .custom(async (body) => {
+    const user: UserDbModel | null = await UsersRepository.findUserByConfirmationCode(body);
+        console.log("rrrrrrrrrrrrrrrrrrrr")
+        console.log(user)
+    if (!user) {
+        throw new Error('User does not exist');
+    }
+    if (user.emailConfirmation.isConfirmed){
+        throw new Error('User is already confirmed')
+    }
+    return true;
+});
+
+
+export const authConfirmationValidation = () => [
+    confirmationCodeValidation,
+    inputValidation]
+
+
+export const emailExistValidation = body('email')
+    .custom(async (body) => {
+    const userByEmail: UserDbModel | null = await UsersRepository.findByLoginOrEmail(body);
+
+    if (!userByEmail) {
+        throw new Error('User already exists');
+    }
+    if (userByEmail.emailConfirmation.isConfirmed) {
+        throw new Error('User already confirmed');
+    }
+
+    return true;
+});
+
+
+export const authRegistraionResendingEmail = ()=>[
+    emailValidation,
+    emailExistValidation,
+    inputValidation
+];
