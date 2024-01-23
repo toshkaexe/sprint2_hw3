@@ -99,7 +99,7 @@ export const authService = {
         console.log("uuu")
         console.log(user)
         if (!user) return null
-       // if (!user.emailConfirmation.isConfirmed) return null
+
         const compare = await bcrypt.compare(body.password, user.accountData.passwordHash)
         if (compare) {
             return user
